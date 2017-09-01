@@ -97,25 +97,34 @@ export default class App extends React.Component {
 
         addInput = () => {
 
-          let message = "";
+          let message = "",
+              symbol = document.getElementById("symbolinput").value.toUpperCase();
 
-          axios.post("/api/add", {
-            symbol: document.getElementById("symbolinput").value
-          })
+          if (this.state.chartData[0].indexOf(symbol) === -1) {
+            axios.post("/api/add", {
+              symbol: symbol
+            })
 
-          .then(res => {
-            if (res.data.message !== "ok") {
-              message = res.data.message;
-            }
-            document.getElementById("addsymbolmessage").innerHTML = message
-          })
+            .then(res => {
+              if (res.data.message !== "ok") {
+                message = res.data.message;
+              }
+              document.getElementById("addsymbolmessage").innerHTML = message
+            })
+          }
         },
 
         removeInput = () => {
+
+          let symbol = document.getElementById("symbolinput").value.toUpperCase();
+
           document.getElementById("addsymbolmessage").innerHTML = "";
-          axios.post("/api/remove", {
-            symbol: document.getElementById("symbolinput").value
-          })
+
+          if (this.state.chartData[0].indexOf(symbol) !== -1) {
+            axios.post("/api/remove", {
+              symbol: symbol
+            })
+          }
         };
 
     return (

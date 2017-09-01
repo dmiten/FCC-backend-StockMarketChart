@@ -59,16 +59,15 @@ model.addSymbol = symbol => { // ◄--------------------------------------------
               }
               model.chartData[i + 1].push(result.dataset.data[i][1]);
             }
+            serverLog("info", "model.addSymbol - " + symbol + " added");
             emitStockData();
             return symbol;
           }
         })
         .catch(err => serverLog("error", "model.addSymbol - " + err.message))
     );
-  } else {
-    return () => {};
   }
-
+  return new Promise(() => {});
 };
 
 model.removeSymbol = symbol => { // ◄-------------------------------------------
@@ -79,6 +78,7 @@ model.removeSymbol = symbol => { // ◄-----------------------------------------
     for (let i = 0; i < model.chartData.length; i++) {
       model.chartData[i].splice(index, 1);
     }
+    serverLog("info", "model.addSymbol - " + symbol + " removed");
     emitStockData();
   }
 };
