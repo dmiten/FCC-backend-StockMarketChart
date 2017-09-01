@@ -13,7 +13,7 @@ model.init = () => { // ◄-----------------------------------------------------
 
   now = new Date();
   year = now.getFullYear();
-  month = now.getMonth();
+  month = now.getMonth() + 1;
   date = now.getDate();
 
   model.chartData = [["date"],[now]];

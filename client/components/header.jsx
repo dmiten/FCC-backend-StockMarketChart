@@ -19,7 +19,7 @@ export default function header() {
         <div id="copyright">
           <span>
                 dmiten |&nbsp;
-            <a href="https://github.com/dmiten/FCC-backend-VotingApp"
+            <a href="https://github.com/dmiten/FCC-backend-StockMarketChart"
                target="blank">
                 <span className="fa fa-github"/>
               </a>
