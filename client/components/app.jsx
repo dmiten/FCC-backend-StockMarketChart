@@ -30,28 +30,24 @@ export default class App extends React.Component {
       focusTarget: "category",
       title: "EOD prices for selected stock symbols",
     };
+    this.socket = io(window.location.origin);
     this.state = {
       addSymbolInput: "",
-      chartData: [[]],
+      chartData: [[],[]],
       chartWidth: "100%"
     };
   }
 
   componentDidMount() { // ◄----------------------------------------------------
-    this.initSocket();
+    this.socket.on("chartData", data => {
+      this.setState({ chartData: this.parseDateForChart(data) });
+    });
     window.addEventListener("resize", this.handleResize);
   }
 
   componentWillUnmount() { // ◄-------------------------------------------------
     window.removeEventListener("resize", this.handleResize);
   }
-
-  initSocket = () => { // ◄-----------------------------------------------------
-    io(window.location.origin)
-    .on("stock chartData", data => {
-      this.setState({ chartData: this.parseDateForChart(data) });
-    });
-  };
 
   parseDateForChart = (data) => { // ◄------------------------------------------
     for (let i = 1; i < data.length; i++) {
@@ -67,8 +63,9 @@ export default class App extends React.Component {
   renderChart = () => { // ◄----------------------------------------------------
     if (this.state.chartData[0].length > 1) {
       return (
-          <div className={"chart"}>
+          <div id="chart">
             <Chart
+                key="chart"
                 chartType="LineChart"
                 data={this.state.chartData}
                 options={this.chartOptions}
@@ -162,18 +159,14 @@ export default class App extends React.Component {
               </Button>
             </InputGroup.Button>
           </InputGroup>
-
           <div className="text-center">
             <span id="addsymbolmessage"> </span>
           </div>
-
         </div>
-
     )
   };
 
   render() { // ◄---------------------------------------------------------------
-
     return (
         <div id="main">
           {header()}

@@ -14,13 +14,13 @@ export function createSocketServer(server) { // ◄-----------------------------
   serverLog("info", "createSocketServer - ok");
 
   io.on("connection", socket => {
-    socket.emit("stock chartData", model.chartData);
+    socket.emit("chartData", model.chartData);
     serverLog("info", "createSocketServer - emit on connection");
   });
 
 }
 
 export function emitStockData() { // ◄------------------------------------------
-  io.emit("stock chartData", model.chartData);
+  io.emit("chartData", model.chartData);
   serverLog("info", "createSocketServer - emit new chartData");
 }

@@ -16,7 +16,7 @@ model.init = () => { // ◄-----------------------------------------------------
   month = now.getMonth() + 1;
   date = now.getDate();
 
-  model.chartData = [["date"],[now]];
+  model.chartData = [["DATE"],[now]];
 };
 
 model.getStockData = symbol => { // ◄-------------------------------------------
@@ -46,11 +46,15 @@ model.addSymbol = symbol => { // ◄--------------------------------------------
   symbol = symbol.toUpperCase();
 
   if (model.chartData[0].indexOf(symbol) === -1) {
+
     return (
+
         model.getStockData(symbol)
 
         .then(result => {
-          if (result && result.dataset && result.dataset.data.length > 0) {
+
+          if (result && result.dataset) {
+
             model.chartData[0].push(symbol);
 
             for (let i = 0; i < result.dataset.data.length; i++) {
@@ -59,6 +63,10 @@ model.addSymbol = symbol => { // ◄--------------------------------------------
               }
               model.chartData[i + 1].push(result.dataset.data[i][1]);
             }
+            if (model.chartData[model.chartData.length - 2].length >
+                  model.chartData[model.chartData.length - 1].length) {
+                  model.chartData[model.chartData.length - 1].push(null);
+            }
             serverLog("info", "model.addSymbol - " + symbol + " added");
             emitStockData();
             return symbol;
@@ -66,8 +74,9 @@ model.addSymbol = symbol => { // ◄--------------------------------------------
         })
         .catch(err => serverLog("error", "model.addSymbol - " + err.message))
     );
+  } else {
+    return new Promise(() => false);
   }
-  return new Promise(() => {});
 };
 
 model.removeSymbol = symbol => { // ◄-------------------------------------------
