@@ -1,0 +1,176 @@
+"use strict";
+
+import axios from "axios";
+import React from "react";
+import { Chart } from "react-google-charts";
+import {
+  Button,
+  FormControl,
+  InputGroup
+} from "react-bootstrap";
+
+import "./app.css";
+
+import header from "./header.jsx";
+
+export default class App extends React.Component {
+
+  constructor(props) { // ◄-----------------------------------------------------
+    super(props);
+    this.chartOptions = {
+      animation: {
+        duration: 1000,
+        easing: "out",
+        startup: true
+      },
+      explorer: {
+        keepInBounds: true,
+        maxZoomOut: 1
+      },
+      focusTarget: "category",
+      title: "EOD prices for selected stock symbols",
+    };
+    this.state = {
+      addSymbolInput: "",
+      chartData: [[]],
+      chartWidth: "100%"
+    };
+  }
+
+  componentDidMount() { // ◄----------------------------------------------------
+    this.initSocket();
+    window.addEventListener("resize", this.handleResize);
+  }
+
+  componentWillUnmount() { // ◄-------------------------------------------------
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  initSocket = () => { // ◄-----------------------------------------------------
+    io(window.location.origin)
+    .on("stock chartData", data => {
+      this.setState({ chartData: this.parseDateForChart(data) });
+    });
+  };
+
+  parseDateForChart = (data) => { // ◄------------------------------------------
+    for (let i = 1; i < data.length; i++) {
+      data[i][0] = new Date(data[i][0]);
+    }
+    return data;
+  };
+
+  handleResize = () => { // ◄---------------------------------------------------
+    this.setState({ chartWidth: "100%" });
+  };
+
+  renderChart = () => { // ◄----------------------------------------------------
+    if (this.state.chartData[0].length > 1) {
+      return (
+          <div className={"chart"}>
+            <Chart
+                chartType="LineChart"
+                data={this.state.chartData}
+                options={this.chartOptions}
+                graph_id="LineChart"
+                width={this.state.chartWidth}
+                height="450px"
+                legend_toggle
+            />
+          </div>
+      )
+    } else {
+      return (
+          <div id="emptychart">
+            emptychart
+          </div>
+      )
+    }
+  };
+
+  renderForm = () => { // ◄-----------------------------------------------------
+
+    let resetInput = () => {
+          document.getElementById("symbolinput").value = "";
+          document.getElementById("addsymbolmessage").innerHTML = ""
+        },
+
+        addInput = () => {
+
+          let message = "";
+
+          axios.post("/api/add", {
+            symbol: document.getElementById("symbolinput").value
+          })
+
+          .then(res => {
+            if (res.data.message !== "ok") {
+              message = res.data.message;
+            }
+            document.getElementById("addsymbolmessage").innerHTML = message
+          })
+        },
+
+        removeInput = () => {
+          document.getElementById("addsymbolmessage").innerHTML = "";
+          axios.post("/api/remove", {
+            symbol: document.getElementById("symbolinput").value
+          })
+        };
+
+    return (
+
+        <div id="addsymboldiv">
+          <InputGroup>
+            <FormControl
+                className="text-center"
+                id="symbolinput"
+                type="text"
+                placeholder="symbol to add"
+            />
+            <InputGroup.Button>
+              <Button
+                  bsStyle="warning"
+                  onClick={resetInput}
+              >
+                <span className="glyphicon glyphicon-stop"/>
+              </Button>
+            </InputGroup.Button>
+            <InputGroup.Button>
+              <Button
+                  bsStyle="success"
+                  onClick={addInput}
+              >
+                <span className="glyphicon glyphicon-plus"/>
+              </Button>
+            </InputGroup.Button>
+            <InputGroup.Button>
+              <Button
+                  bsStyle="info"
+                  onClick={removeInput}
+              >
+                <span className="glyphicon glyphicon-minus"/>
+              </Button>
+            </InputGroup.Button>
+          </InputGroup>
+
+          <div className="text-center">
+            <span id="addsymbolmessage"> </span>
+          </div>
+
+        </div>
+
+    )
+  };
+
+  render() { // ◄---------------------------------------------------------------
+
+    return (
+        <div id="main">
+          {header()}
+          {this.renderChart()}
+          {this.renderForm()}
+        </div>
+    )
+  }
+}
