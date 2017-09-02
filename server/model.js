@@ -16,7 +16,7 @@ model.init = () => { // ◄-----------------------------------------------------
   month = now.getMonth() + 1;
   date = now.getDate();
 
-  model.chartData = [["DATE"],[now]];
+  model.chartData = [["DATE"]];
 };
 
 model.getStockData = symbol => { // ◄-------------------------------------------
@@ -46,27 +46,40 @@ model.addSymbol = symbol => { // ◄--------------------------------------------
   symbol = symbol.toUpperCase();
 
   if (model.chartData[0].indexOf(symbol) === -1) {
-
     return (
 
         model.getStockData(symbol)
-
         .then(result => {
 
-          if (result && result.dataset) {
+          if (result && result.dataset && result.dataset.data) {
 
             model.chartData[0].push(symbol);
 
-            for (let i = 0; i < result.dataset.data.length; i++) {
-              if (!model.chartData[i + 1]) {
-                model.chartData[i + 1] = [result.dataset.data[i][0]];
+            if (model.chartData.length < result.dataset.data.length) {
+
+              for (let i = 0; i < result.dataset.data.length; i++) {
+
+                if (!model.chartData[i + 1]) {
+                  model.chartData[i + 1] = [];
+                }
+
+                model.chartData[i + 1].length = model.chartData[0].length;
+                model.chartData[i + 1][0] = result.dataset.data[i][0];
+                model.chartData[i + 1][model.chartData[0].length - 1] =
+                    result.dataset.data[i][1];
               }
-              model.chartData[i + 1].push(result.dataset.data[i][1]);
+            } else {
+
+              for (let i = 0; i < model.chartData.length - 1; i++) {
+
+                model.chartData[i + 1].length = model.chartData[0].length;
+                model.chartData[i + 1][model.chartData[0].length - 1] =
+                    result.dataset.data[i] ?
+                        result.dataset.data[i][1] :
+                        null;
+              }
             }
-            if (model.chartData[model.chartData.length - 2].length >
-                model.chartData[model.chartData.length - 1].length) {
-                    model.chartData[model.chartData.length - 1].push(null);
-               }
+
             serverLog("info", "model.addSymbol - " + symbol + " added");
             emitStockData();
             return symbol;
@@ -86,6 +99,9 @@ model.removeSymbol = symbol => { // ◄-----------------------------------------
   if (index !== -1) {
     for (let i = 0; i < model.chartData.length; i++) {
       model.chartData[i].splice(index, 1);
+    }
+    if (model.chartData[0].length === 1) {
+      model.chartData.length = 1;
     }
     serverLog("info", "model.addSymbol - " + symbol + " removed");
     emitStockData();
