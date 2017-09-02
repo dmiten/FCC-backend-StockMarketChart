@@ -64,9 +64,9 @@ model.addSymbol = symbol => { // ◄--------------------------------------------
               model.chartData[i + 1].push(result.dataset.data[i][1]);
             }
             if (model.chartData[model.chartData.length - 2].length >
-                  model.chartData[model.chartData.length - 1].length) {
-                  model.chartData[model.chartData.length - 1].push(null);
-            }
+                model.chartData[model.chartData.length - 1].length) {
+                    model.chartData[model.chartData.length - 1].push(null);
+               }
             serverLog("info", "model.addSymbol - " + symbol + " added");
             emitStockData();
             return symbol;

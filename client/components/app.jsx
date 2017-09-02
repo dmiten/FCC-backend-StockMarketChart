@@ -132,7 +132,7 @@ export default class App extends React.Component {
                 className="text-center"
                 id="symbolinput"
                 type="text"
-                placeholder="symbol to add"
+                placeholder="symbol to add/remove"
             />
             <InputGroup.Button>
               <Button
