@@ -139,7 +139,7 @@ export default class App extends React.Component {
                   bsStyle="warning"
                   onClick={resetInput}
               >
-                <span className="glyphicon glyphicon-stop"/>
+                <span className="fa fa-stop"/>
               </Button>
             </InputGroup.Button>
             <InputGroup.Button>
@@ -147,7 +147,7 @@ export default class App extends React.Component {
                   bsStyle="success"
                   onClick={addInput}
               >
-                <span className="glyphicon glyphicon-plus"/>
+                <span className="fa fa-plus-square"/>
               </Button>
             </InputGroup.Button>
             <InputGroup.Button>
@@ -155,7 +155,7 @@ export default class App extends React.Component {
                   bsStyle="info"
                   onClick={removeInput}
               >
-                <span className="glyphicon glyphicon-minus"/>
+                <span className="fa fa-minus-square"/>
               </Button>
             </InputGroup.Button>
           </InputGroup>
